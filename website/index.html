@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdSense AI Search</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #20243a;
+        }
+
+        header {
+            padding: 22px 8%;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        header span {
+            color: #6658e8;
+        }
+
+        main {
+            max-width: 850px;
+            margin: 65px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .intro h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .intro p {
+            color: #687086;
+            line-height: 1.6;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            padding: 9px;
+            background: white;
+            border: 1px solid #e0e3ed;
+            border-radius: 14px;
+            box-shadow: 0 8px 28px #242b4a0c;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 13px 22px;
+            background: #6658e8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .suggestions {
+            text-align: center;
+            margin: 20px 0 35px;
+            color: #687086;
+            font-size: 14px;
+        }
+
+        .suggestions button {
+            margin: 5px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: white;
+            color: #5146bd;
+            border: 1px solid #dedafc;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 18px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        #summary {
+            line-height: 1.8;
+            color: #4b5568;
+        }
+
+        a {
+            color: #6658e8;
+        }
+
+        .muted {
+            color: #687086;
+            font-size: 14px;
+        }
+
+        .history-item {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            cursor: pointer;
+            background: white;
+        }
+
+        #status {
+            text-align: center;
+            color: #6658e8;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            color: #7b8192;
+            font-size: 13px;
+            padding: 35px 15px;
+        }
+
+        @media (max-width: 520px) {
+            .intro h1 {
+                font-size: 30px;
+            }
+
+            form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>AdSense <span>AI</span> Search</header>
+
+    <main>
+        <section class="intro">
+            <h1>Curiosity starts here.</h1>
+            <p>Search a topic, discover useful information, and explore something new.</p>
+        </section>
+
+        <form id="searchForm">
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Try cats, chocolate, cars..."
+                maxlength="200"
+                required
+            >
+            <button id="searchButton" type="submit">Search</button>
+        </form>
+
+        <div class="suggestions">
+            Try:
+            <button type="button" data-query="Cats">🐱 Cats</button>
+            <button type="button" data-query="Chocolate">🍫 Chocolate</button>
+            <button type="button" data-query="Cars">🚗 Cars</button>
+            <button type="button" data-query="Flowers">🌸 Flowers</button>
+        </div>
+
+        <p id="status" role="status"></p>
+
+        <section class="panel" id="resultPanel" hidden>
+            <h2 id="resultTitle">Search results</h2>
+            <p id="summary"></p>
+            <a id="articleLink" target="_blank" rel="noopener noreferrer" hidden>
+                Read more
+            </a>
+        </section>
+
+        <section class="panel">
+            <h2>Recent searches</h2>
+            <p class="muted">Your searches are saved locally by the backend.</p>
+            <div id="historyList">Loading history...</div>
+        </section>
+    </main>
+
+    <footer>
+        AdSense AI · Search thoughtfully. Discover more.
+    </footer>
+
+    <script>
+        const API = "http://127.0.0.1:8000";
+
+        const form = document.getElementById("searchForm");
+        const input = document.getElementById("searchInput");
+        const button = document.getElementById("searchButton");
+        const status = document.getElementById("status");
+        const resultPanel = document.getElementById("resultPanel");
+
+        async function searchTopic(topic) {
+            topic = topic.trim();
+
+            if (!topic) return;
+
+            input.value = topic;
+            button.disabled = true;
+            status.textContent = "Searching...";
+            resultPanel.hidden = true;
+
+            try {
+                const response = await fetch(
+                    `${API}/search?topic=${encodeURIComponent(topic)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("The search request failed.");
+                }
+
+                const data = await response.json();
+
+                document.getElementById("resultTitle").textContent =
+                    data.title || topic;
+
+                document.getElementById("summary").textContent =
+                    data.summary || "No summary is available.";
+
+                const articleLink = document.getElementById("articleLink");
+
+                if (data.article_url) {
+                    articleLink.href = data.article_url;
+                    articleLink.hidden = false;
+                } else {
+                    articleLink.hidden = true;
+                    articleLink.removeAttribute("href");
+                }
+
+                resultPanel.hidden = false;
+                status.textContent = "";
+                await loadHistory();
+
+            } catch (error) {
+                status.textContent =
+                    "Couldn't complete the search. Check that the backend is running.";
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function loadHistory() {
+            const historyList = document.getElementById("historyList");
+
+            try {
+                const response = await fetch(`${API}/history`);
+
+                if (!response.ok) {
+                    throw new Error("History request failed.");
+                }
+
+                const data = await response.json();
+                historyList.replaceChildren();
+
+                if (!data.history || data.history.length === 0) {
+                    historyList.textContent = "No searches yet.";
+                    return;
+                }
+
+                data.history.forEach(item => {
+                    const chip = document.createElement("button");
+                    chip.type = "button";
+                    chip.className = "history-item";
+                    chip.textContent = item.query;
+
+                    chip.addEventListener("click", () => {
+                        searchTopic(item.query);
+                    });
+
+                    historyList.appendChild(chip);
+                });
+
+            } catch {
+                historyList.textContent =
+                    "History is unavailable. Check the backend.";
+            }
+        }
+
+        form.addEventListener("submit", event => {
+            event.preventDefault();
+            searchTopic(input.value);
+        });
+
+        document.querySelectorAll("[data-query]").forEach(button => {
+            button.addEventListener("click", () => {
+                searchTopic(button.dataset.query);
+            });
+        });
+
+        loadHistory();
+    </script>
+</body>
+</html>

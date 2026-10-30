@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdSense AI</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --purple: #7654e8;
+      --purple-dark: #5635bf;
+      --ink: #24213a;
+      --muted: #77758b;
+      --surface: #ffffff;
+      --border: #eae6f5;
+    }
+
+    body {
+      width: 360px;
+      min-height: 320px;
+      margin: 0;
+      padding: 18px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(160deg, #f6f1ff 0%, #fbfaff 48%, #f0f5ff 100%);
+    }
+
+    header { margin-bottom: 17px; }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #9575ff, #5936c5);
+      color: white;
+      font-size: 23px;
+      box-shadow: 0 5px 14px #7654e833;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 750;
+      letter-spacing: -0.6px;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 13px;
+      padding: 6px 9px;
+      border: 1px solid #e3dcff;
+      border-radius: 20px;
+      background: #f0ebff;
+      color: #6344bd;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8b6bf0;
+    }
+
+    .notice {
+      padding: 12px;
+      border: 1px solid #e9e0ff;
+      border-radius: 13px;
+      background: #ffffffc9;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #5e5875;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #42336d;
+      font-size: 12px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border: 0;
+      border-radius: 11px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(0); }
+
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid #b6a3ff;
+      outline-offset: 2px;
+    }
+
+    #consentButton {
+      background: linear-gradient(135deg, #8867f3, #633ed0);
+      color: white;
+      box-shadow: 0 5px 12px #7654e82b;
+    }
+
+    #analyseButton {
+      background: var(--ink);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .secondary {
+      border: 1px solid var(--border);
+      background: white;
+      color: #6546bd;
+    }
+
+    #status {
+      min-height: 18px;
+      margin: 13px 2px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0 10px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .section-heading span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    #ads {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ad-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface);
+      box-shadow: 0 5px 18px #30205d0a;
+      transition: box-shadow 0.2s;
+    }
+
+    .ad-card:hover {
+      box-shadow: 0 8px 22px #30205d14;
+    }
+
+    .ad-card img {
+      display: block;
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      background: #eee9fa;
+    }
+
+    .ad-content { padding: 13px; }
+
+    .sponsored {
+      color: #7855d3;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+    }
+
+    .ad-content h2 {
+      margin: 7px 0 5px;
+      color: var(--ink);
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .ad-content p {
+      margin: 0;
+      color: #706d80;
+      font-size: 11px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .ad-content a {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 11px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: #eee8ff;
+      color: #603dc5;
+      font-size: 11px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .ad-content a:hover { background: #e2d8ff; }
+
+    footer {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid #e8e3f1;
+      color: #89859b;
+      font-size: 10px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .privacy-icon { margin-right: 4px; }
+    
+.ad-image-placeholder {
+  width: 100%;
+  height: 160px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f3e8ff, #e0e7ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #5b21b6;
+  text-align: center;
+}
+
+.placeholder-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #ffffffb8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.placeholder-brand {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.placeholder-message {
+  font-size: 11px;
+  color: #6d5b91;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-row">
+      <div class="logo" aria-hidden="true">✦</div>
+      <div>
+        <h1>AdSense AI</h1>
+        <p class="subtitle">Discover ads that match your interests.</p>
+      </div>
+    </div>
+    <div class="pill"><span class="dot"></span> AI-POWERED RECOMMENDATIONS</div>
+  </header>
+
+  <section class="notice">
+    <strong>🔒 Your browsing, your choice</strong>
+    Allow this session to analyse the active webpage and find relevant ads.
+    Page text is sent to your local AdSense AI backend for matching.
+  </section>
+
+  <button id="consentButton">✓ &nbsp; Allow for this session</button>
+  <button id="analyseButton" disabled>✦ &nbsp; Find relevant ads</button>
+  <button id="stopButton" class="secondary" hidden>Turn off consent</button>
+
+  <p id="status" role="status" aria-live="polite">
+    Consent is required before analysis.
+  </p>
+
+  <div class="section-heading">
+    Recommended for you
+    <span>Up to 2 ads per session</span>
+  </div>
+
+  <section id="ads" aria-label="Recommended advertisements"></section>
+
+  <footer>
+    <span class="privacy-icon">🛡️</span>
+    Privacy-conscious demo · Ads appear only in this popup
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

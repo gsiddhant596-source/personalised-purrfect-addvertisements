@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdSense AI | Enterprise Portal & Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .dropzone-active { border-color: #6366f1 !important; background-color: rgba(99, 102, 241, 0.1) !important; }
+  </style>
+</head>
+<body class="bg-base-300 min-h-screen text-base-content p-4 md:p-8">
+
+  <!-- Navigation Bar -->
+  <div class="navbar bg-base-100 rounded-2xl shadow-xl mb-8 px-6 border border-base-content/5">
+    <div class="flex-1">
+      <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+        ✦ AdSense AI Enterprise Portal
+      </span>
+    </div>
+    <div class="flex-none gap-2">
+      <div id="backendBadge" class="badge badge-success gap-2 py-3 px-4 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+        RTX 4050 SD-Turbo Online
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto space-y-8">
+    
+    <!-- Metrics Row -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="stat bg-base-100 rounded-2xl shadow-lg border border-base-content/5 p-6">
+        <div class="stat-title text-xs font-bold uppercase tracking-wider text-base-content/60">Active Campaigns</div>
+        <div id="statAds" class="stat-value text-primary text-3xl font-extrabold mt-1">—</div>
+        <div class="stat-desc text-xs mt-1">Indexed in SQLite database</div>
+      </div>
+      <div class="stat bg-base-100 rounded-2xl shadow-lg border border-base-content/5 p-6">
+        <div class="stat-title text-xs font-bold uppercase tracking-wider text-base-content/60">Tracked Searches</div>
+        <div id="statSearches" class="stat-value text-secondary text-3xl font-extrabold mt-1">—</div>
+        <div class="stat-desc text-xs mt-1">Logged locally via extension</div>
+      </div>
+      <div class="stat bg-base-100 rounded-2xl shadow-lg border border-base-content/5 p-6">
+        <div class="stat-title text-xs font-bold uppercase tracking-wider text-base-content/60">Semantic Matcher</div>
+        <div class="stat-value text-accent text-xl font-extrabold mt-1">all-MiniLM-L6-v2</div>
+        <div class="stat-desc text-xs mt-1">Real-time cosine similarity</div>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Company Listing Form with Drag-and-Drop -->
+      <div class="card bg-base-100 shadow-xl border border-base-content/5">
+        <div class="card-body">
+          <h2 class="card-title text-lg flex items-center gap-2">
+            <span>📦</span> Register Product / Service
+          </h2>
+          <p class="text-xs text-base-content/60 mb-2">
+            Upload your product image or leave empty to auto-generate one on the RTX 4050 GPU.
+          </p>
+
+          <form id="productForm" class="space-y-3">
+            <div>
+              <label class="label text-xs font-semibold py-1">Company / Brand Name</label>
+              <input id="pCompany" type="text" placeholder="e.g. BloomBox Luxury Florals" class="input input-bordered w-full input-sm" required />
+            </div>
+
+            <div>
+              <label class="label text-xs font-semibold py-1">Product Title</label>
+              <input id="pName" type="text" placeholder="e.g. Artisanal Velvet Rose Box" class="input input-bordered w-full input-sm" required />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="label text-xs font-semibold py-1">Category</label>
+                <select id="pCategory" class="select select-bordered w-full select-sm">
+                  <option>Florist & Gifts</option>
+                  <option>Pet Supplies</option>
+                  <option>Consumer Tech</option>
+                  <option>Gourmet & Dining</option>
+                  <option>Automotive</option>
+                  <option>Fashion & Apparel</option>
+                </select>
+              </div>
+              <div>
+                <label class="label text-xs font-semibold py-1">Price / Offer</label>
+                <input id="pPrice" type="text" placeholder="$49.00" class="input input-bordered w-full input-sm" required />
+              </div>
+            </div>
+
+            <div>
+              <label class="label text-xs font-semibold py-1">Product Description</label>
+              <textarea id="pDesc" rows="2" placeholder="Describe the physical appearance, materials, or features..." class="textarea textarea-bordered w-full text-xs" required></textarea>
+            </div>
+
+            <div>
+              <label class="label text-xs font-semibold py-1">Target Keywords (Comma-separated)</label>
+              <input id="pTopics" type="text" placeholder="flowers, roses, bouquet, gifts" class="input input-bordered w-full input-sm" required />
+            </div>
+
+            <!-- Inside backend/admin.html, replace the Destination URL block: -->
+<div>
+  <label class="label text-xs font-semibold py-1">Destination URL (Website link when user clicks the ad)</label>
+  <input 
+    id="pUrl" 
+    type="text" 
+    placeholder="e.g. https://www.pedigree.com or https://amazon.in" 
+    value="https://www.pedigree.com"
+    class="input input-bordered w-full input-sm" 
+    required 
+  />
+  <span class="text-[10px] text-base-content/50">Enter a website link (e.g. https://example.com). Do not use local file:/// paths.</span>
+</div>
+
+            <!-- Drag & Drop Upload Container -->
+            <div>
+              <label class="label text-xs font-semibold py-1">Product Creative Image (Drag & Drop)</label>
+              <div 
+                id="dropZone" 
+                class="border-2 border-dashed border-base-content/20 rounded-xl p-4 text-center cursor-pointer hover:border-primary transition duration-150 flex flex-col items-center justify-center gap-2 bg-base-200/50"
+              >
+                <input type="file" id="fileInput" accept="image/*" class="hidden" />
+                <div id="dropPrompt" class="space-y-1">
+                  <span class="text-2xl">📁</span>
+                  <p class="text-xs font-semibold text-base-content/80">Drag & Drop image here, or <span class="text-primary underline">browse</span></p>
+                  <p class="text-[10px] text-base-content/50">Supports PNG, JPG, WEBP (Leave blank to use AI generator)</p>
+                </div>
+                <div id="dropPreview" class="hidden relative w-full flex items-center justify-center">
+                  <img id="previewImg" src="" class="h-28 w-full object-cover rounded-lg border border-base-content/10" />
+                  <button type="button" id="removeFileBtn" class="btn btn-circle btn-xs btn-error absolute top-2 right-2 text-white">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-primary w-full mt-2 font-bold">
+              ✦ Publish Campaign to Database
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Active Catalog Inventory -->
+      <div class="lg:col-span-2 card bg-base-100 shadow-xl border border-base-content/5">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="card-title text-lg">📦 Active Database Inventory</h2>
+            <button onclick="loadDashboard()" class="btn btn-ghost btn-xs">↻ Refresh</button>
+          </div>
+          <div id="campaignsList" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[620px] overflow-y-auto pr-1">
+            <!-- Dynamically populated from SQLite -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = "http://127.0.0.1:8000";
+    let selectedFile = null;
+
+    // Drag-and-drop elements
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const dropPrompt = document.getElementById("dropPrompt");
+    const dropPreview = document.getElementById("dropPreview");
+    const previewImg = document.getElementById("previewImg");
+    const removeFileBtn = document.getElementById("removeFileBtn");
+
+    // Click to select
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    // Drag events
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dropzone-active");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dropzone-active");
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dropzone-active");
+      if (e.dataTransfer.files.length) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length) {
+        handleFile(fileInput.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      if (!file.type.startsWith("image/")) {
+        alert("Please drop an image file (PNG, JPG, WEBP).");
+        return;
+      }
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        dropPrompt.classList.add("hidden");
+        dropPreview.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    removeFileBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectedFile = null;
+      fileInput.value = "";
+      previewImg.src = "";
+      dropPreview.classList.add("hidden");
+      dropPrompt.classList.remove("hidden");
+    });
+
+    async function loadDashboard() {
+      try {
+        const [adsRes, histRes] = await Promise.all([
+          fetch(`${API}/ads`),
+          fetch(`${API}/history`)
+        ]);
+
+        const adsData = await adsRes.json();
+        const histData = await histRes.json();
+        const ads = adsData.ads || [];
+
+        document.getElementById("statAds").textContent = ads.length;
+        document.getElementById("statSearches").textContent = (histData.history || []).length;
+
+        const list = document.getElementById("campaignsList");
+        list.innerHTML = "";
+
+        if (!ads.length) {
+          list.innerHTML = `<div class="col-span-2 text-center text-sm text-base-content/50 py-12">No active campaigns in database.</div>`;
+          return;
+        }
+
+        ads.forEach(ad => {
+          list.innerHTML += `
+            <div class="card bg-base-200 border border-base-300 overflow-hidden shadow-sm">
+              <figure class="h-36 bg-base-300">
+                <img src="${ad.image_url}" alt="${ad.product_name}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x340?text=Generating+Creative...'"/>
+              </figure>
+              <div class="p-4 space-y-2">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-bold text-sm leading-tight">${ad.product_name || ad.name}</h3>
+                  <span class="badge badge-accent badge-sm font-semibold">${ad.price || "Sponsored"}</span>
+                </div>
+                <p class="text-xs text-base-content/70 line-clamp-2">${ad.description}</p>
+                <div class="text-[10px] text-base-content/50 truncate font-mono">
+                  Topics: ${ad.target_topics}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } catch (err) {
+        document.getElementById("backendBadge").textContent = "Offline";
+        document.getElementById("backendBadge").className = "badge badge-error text-xs font-semibold py-3 px-4";
+      }
+    }
+
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loading loading-spinner loading-xs"></span> Saving to SQLite...`;
+
+      const formData = new FormData();
+      formData.append("company_name", document.getElementById("pCompany").value.trim());
+      formData.append("product_name", document.getElementById("pName").value.trim());
+      formData.append("category", document.getElementById("pCategory").value);
+      formData.append("description", document.getElementById("pDesc").value.trim());
+      formData.append("target_topics", document.getElementById("pTopics").value.trim());
+      formData.append("price", document.getElementById("pPrice").value.trim());
+      formData.append("destination_url", document.getElementById("pUrl").value.trim());
+
+      if (selectedFile) {
+        formData.append("image_file", selectedFile);
+      }
+
+      try {
+        const res = await fetch(`${API}/api/company/add-product`, {
+          method: "POST",
+          body: formData
+        });
+
+        if (res.ok) {
+          document.getElementById("productForm").reset();
+          selectedFile = null;
+          previewImg.src = "";
+          dropPreview.classList.add("hidden");
+          dropPrompt.classList.remove("hidden");
+          await loadDashboard();
+        } else {
+          alert("Failed to save product.");
+        }
+      } catch {
+        alert("Cannot reach FastAPI backend.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `✦ Publish Campaign to Database`;
+      }
+    });
+
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+requests
+pydantic
+python-multipart
+sentence-transformers
+torch
+torchvision
+diffusers
+transformers
+accelerate

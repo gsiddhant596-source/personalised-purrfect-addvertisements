@@ -1,0 +1,1774 @@
+PROJECT FOLDER STRUCTURE:
+project adsense purrfect ai/
+├── backend
+│   ├── admin.html
+│   ├── database.py
+│   ├── main.py
+│   ├── recommendations.py
+│   ├── requirements.txt
+│   ├── sd_generator.py
+│   ├── seed_ads.py
+│   └── static
+│       └── ads
+├── extension
+│   ├── background.js
+│   ├── content.js
+│   ├── manifest.json
+│   ├── popup.css
+│   ├── popup.html
+│   └── popup.js
+└── website
+    └── index.html
+
+
+================================================================================
+PROJECT FILES CONTENT
+================================================================================
+
+
+/* ====================================================================== */
+/* FILE: backend/admin.html */
+/* ====================================================================== */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdSense AI | Enterprise Portal & Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    header {
+      background: linear-gradient(120deg, #4338ca, #6366f1);
+      color: white;
+      padding: 24px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin: 0; font-size: 24px; }
+    main { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+    .card {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 14px; padding: 22px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    }
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin-bottom: 24px;
+    }
+    .stat-box {
+      background: white; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 14px; text-align: center;
+    }
+    .stat-num { font-size: 24px; font-weight: bold; color: #4338ca; }
+    .stat-label { font-size: 12px; color: #64748b; }
+    label { font-size: 13px; font-weight: 600; color: #334155; display: block; margin-top: 10px; }
+    input, textarea, select {
+      width: 100%; padding: 10px; border: 1px solid #cbd5e1;
+      border-radius: 8px; margin-top: 4px; font-size: 14px;
+    }
+    button.btn {
+      width: 100%; margin-top: 16px; padding: 12px;
+      background: #4338ca; color: white; border: none;
+      border-radius: 8px; font-weight: bold; cursor: pointer;
+    }
+    button.btn:hover { background: #3730a3; }
+    .items { display: grid; gap: 12px; max-height: 480px; overflow-y: auto; }
+    .item {
+      border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;
+      display: flex; gap: 12px; align-items: center;
+    }
+    .item img {
+      width: 85px; height: 60px; object-fit: cover; border-radius: 6px;
+      background: #f1f5f9;
+    }
+    .item-body { flex: 1; }
+    .item-body strong { font-size: 14px; }
+    .item-body p { margin: 2px 0 0; font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>✦ AdSense AI Enterprise</h1>
+      <p style="margin:4px 0 0; opacity:0.9; font-size:13px;">Advertiser Product Portal & Semantic Network Dashboard</p>
+    </div>
+    <span id="backendBadge" style="background:#22c55e; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold;">Online</span>
+  </header>
+
+  <main>
+    <div class="stats">
+      <div class="stat-box">
+        <div class="stat-num" id="statAds">—</div>
+        <div class="stat-label">Active Ad Campaigns</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statSearches">—</div>
+        <div class="stat-label">Tracked Searches</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statStatus">Healthy</div>
+        <div class="stat-label">Vector Engine</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Company Product Listing Portal -->
+      <section class="card">
+        <h2 style="margin-top:0; font-size:18px;">➕ Register Product / Service</h2>
+        <p style="font-size:12px; color:#64748b;">Submit your listing. If no image URL is provided, Stable Diffusion generates an ad banner locally on the RTX 4050.</p>
+
+        <form id="productForm">
+          <label>Company / Brand Name</label>
+          <input id="pCompany" placeholder="e.g. BloomBox Luxury Florals" required>
+
+          <label>Product Name</label>
+          <input id="pName" placeholder="e.g. Artisanal Velvet Rose Box" required>
+
+          <label>Category</label>
+          <select id="pCategory">
+            <option value="Florist & Gifts">Florist & Gifts</option>
+            <option value="Pet Supplies">Pet Supplies</option>
+            <option value="Consumer Tech">Consumer Tech</option>
+            <option value="Gourmet & Dining">Gourmet & Dining</option>
+            <option value="Automotive">Automotive</option>
+            <option value="Fashion & Apparel">Fashion & Apparel</option>
+          </select>
+
+          <label>Description (Used by Stable Diffusion to render ad)</label>
+          <textarea id="pDesc" rows="2" placeholder="Describe the physical appearance, materials, or features..." required></textarea>
+
+          <label>Target Matching Topics (Comma-separated keywords)</label>
+          <input id="pTopics" placeholder="e.g. flowers, roses, bouquet, gifts" required>
+
+          <label>Price / Offer</label>
+          <input id="pPrice" placeholder="e.g. $49.00 or 20% Off" required>
+
+          <label>Destination URL</label>
+          <input id="pUrl" placeholder="https://example.com/product" required>
+
+          <label>Custom Image URL (Optional - leave blank for AI generation)</label>
+          <input id="pImg" placeholder="Leave empty to generate with Stable Diffusion">
+
+          <button type="submit" id="submitBtn" class="btn">✦ Generate AI Creative & Publish Ad</button>
+        </form>
+      </section>
+
+      <!-- Active Campaigns Catalog -->
+      <section class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h2 style="margin:0; font-size:18px;">📦 Active Ad Inventory</h2>
+          <button onclick="loadDashboard()" style="background:none; border:1px solid #cbd5e1; border-radius:6px; padding:4px 8px; cursor:pointer;">↻ Refresh</button>
+        </div>
+        <div id="campaignsList" class="items">Loading campaigns...</div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const API = "http://127.0.0.1:8000";
+
+    async function loadDashboard() {
+      try {
+        const [adsRes, histRes] = await Promise.all([
+          fetch(`${API}/ads`),
+          fetch(`${API}/history`)
+        ]);
+
+        const adsData = await adsRes.json();
+        const histData = await histRes.json();
+
+        const ads = adsData.ads || [];
+        document.getElementById("statAds").textContent = ads.length;
+        document.getElementById("statSearches").textContent = (histData.history || []).length;
+
+        const list = document.getElementById("campaignsList");
+        list.replaceChildren();
+
+        if (!ads.length) {
+          list.innerHTML = "<p style='color:#64748b; font-size:13px;'>No active campaigns. Register one using the form.</p>";
+          return;
+        }
+
+        ads.forEach(ad => {
+          const item = document.createElement("div");
+          item.className = "item";
+
+          const img = document.createElement("img");
+          img.src = ad.image_url || "https://placehold.co/85x60?text=No+Ad";
+          img.alt = ad.product_name || ad.name;
+
+          const body = document.createElement("div");
+          body.className = "item-body";
+          body.innerHTML = `
+            <strong>${ad.product_name || ad.name}</strong>
+            <span style="font-size:11px; color:#4338ca; font-weight:600;">(${ad.price || "Sponsored"})</span>
+            <p>${ad.description}</p>
+            <p style="font-size:11px; color:#94a3b8;">Topics: ${ad.target_topics}</p>
+          `;
+
+          item.append(img, body);
+          list.appendChild(item);
+        });
+
+      } catch (err) {
+        document.getElementById("backendBadge").textContent = "Offline";
+        document.getElementById("backendBadge").style.background = "#ef4444";
+      }
+    }
+
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.textContent = "Running Stable Diffusion on GPU...";
+
+      const payload = {
+        company_name: document.getElementById("pCompany").value.trim(),
+        product_name: document.getElementById("pName").value.trim(),
+        category: document.getElementById("pCategory").value,
+        description: document.getElementById("pDesc").value.trim(),
+        target_topics: document.getElementById("pTopics").value.trim(),
+        price: document.getElementById("pPrice").value.trim(),
+        destination_url: document.getElementById("pUrl").value.trim(),
+        custom_image_url: document.getElementById("pImg").value.trim() || null
+      };
+
+      try {
+        const res = await fetch(`${API}/api/company/add-product`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          alert("Ad campaign published and AI image generated!");
+          document.getElementById("productForm").reset();
+          await loadDashboard();
+        } else {
+          alert("Failed to save product.");
+        }
+      } catch (err) {
+        alert("Cannot connect to FastAPI. Make sure 'python main.py' is running.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "✦ Generate AI Creative & Publish Ad";
+      }
+    });
+
+    loadDashboard();
+  </script>
+</body>
+</html>
+
+
+/* ====================================================================== */
+/* FILE: backend/database.py */
+/* ====================================================================== */
+
+import sqlite3
+from pathlib import Path
+
+DB_PATH = Path(__file__).parent / "adsense_ai.db"
+
+
+def get_connection():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+
+def create_tables():
+    connection = get_connection()
+
+    # User search tracking
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS search_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            query TEXT NOT NULL,
+            searched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # Company & Product Advertising Catalog
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS ad_campaigns (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_name TEXT NOT NULL,
+            product_name TEXT NOT NULL,
+            category TEXT NOT NULL,
+            description TEXT NOT NULL,
+            target_topics TEXT NOT NULL,
+            price TEXT,
+            image_url TEXT,
+            destination_url TEXT NOT NULL,
+            active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    connection.commit()
+    connection.close()
+
+
+def save_search(query: str):
+    with get_connection() as connection:
+        connection.execute(
+            "INSERT INTO search_history (query) VALUES (?)",
+            (query,)
+        )
+
+
+def get_search_history():
+    with get_connection() as connection:
+        rows = connection.execute("""
+            SELECT id, query, searched_at
+            FROM search_history
+            ORDER BY id DESC
+        """).fetchall()
+
+        return [dict(row) for row in rows]
+
+
+def add_product_campaign(
+    company_name: str,
+    product_name: str,
+    category: str,
+    description: str,
+    target_topics: str,
+    price: str = "Free",
+    image_url: str = None,
+    destination_url: str = "https://example.com"
+):
+    """Adds a complete company product listing."""
+    with get_connection() as connection:
+        cursor = connection.execute("""
+            INSERT INTO ad_campaigns (
+                company_name, product_name, category,
+                description, target_topics, price,
+                image_url, destination_url
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            company_name, product_name, category,
+            description, target_topics, price,
+            image_url, destination_url
+        ))
+        connection.commit()
+        return cursor.lastrowid
+
+
+# Backward compatibility wrapper for old seed scripts
+def add_ad_campaign(
+    name,
+    description,
+    target_topics,
+    image_url=None,
+    destination_url=None
+):
+    add_product_campaign(
+        company_name=name,
+        product_name=name,
+        category="General",
+        description=description,
+        target_topics=target_topics,
+        price="",
+        image_url=image_url,
+        destination_url=destination_url or "https://example.com"
+    )
+
+
+def get_active_ads():
+    with get_connection() as connection:
+        rows = connection.execute("""
+            SELECT * FROM ad_campaigns
+            WHERE active = 1
+            ORDER BY id DESC
+        """).fetchall()
+
+        ads = []
+        for row in rows:
+            d = dict(row)
+            # Ensure extension compatibility expecting ad["name"]
+            if "name" not in d or not d["name"]:
+                d["name"] = f"{d.get('product_name', '')} by {d.get('company_name', '')}"
+            ads.append(d)
+        return ads
+
+
+/* ====================================================================== */
+/* FILE: backend/main.py */
+/* ====================================================================== */
+
+from fastapi import FastAPI, Query
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from pathlib import Path
+from urllib.parse import quote
+import requests
+
+from database import (
+    create_tables,
+    save_search,
+    get_search_history,
+    get_active_ads,
+    add_product_campaign
+)
+from recommendations import recommend_ads
+from sd_generator import generate_local_sd_banner
+
+app = FastAPI(title="AdSense AI")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount local static folder so browser and extension can load generated images
+STATIC_PATH = Path(__file__).parent / "static"
+STATIC_PATH.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(STATIC_PATH)), name="static")
+
+
+@app.on_event("startup")
+def startup():
+    create_tables()
+
+
+@app.get("/")
+def home():
+    return {"message": "AdSense AI backend is running!", "status": "success"}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
+@app.get("/search")
+def search(topic: str = Query(..., min_length=1, max_length=200)):
+    topic = topic.strip()
+    if not topic:
+        return {"error": "Please enter a search topic."}
+
+    save_search(topic)
+    url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + quote(topic.replace(" ", "_"))
+
+    try:
+        response = requests.get(url, timeout=10, headers={"User-Agent": "AdSenseAI/1.0"})
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                "topic": topic,
+                "title": data.get("title", topic),
+                "summary": data.get("extract", "No summary available."),
+                "article_url": data.get("content_urls", {}).get("desktop", {}).get("page"),
+            }
+        return {
+            "topic": topic,
+            "title": topic,
+            "summary": "No Wikipedia summary found. Try another search term.",
+            "article_url": None,
+        }
+    except requests.RequestException:
+        return {
+            "topic": topic,
+            "title": topic,
+            "summary": "Information service temporarily unavailable.",
+            "article_url": None,
+        }
+
+
+@app.get("/history")
+def history():
+    return {"history": get_search_history()}
+
+
+@app.get("/ads")
+def list_ads():
+    return {"ads": get_active_ads()}
+
+
+class ProductCreate(BaseModel):
+    company_name: str
+    product_name: str
+    category: str
+    description: str
+    target_topics: str
+    price: str = "Free"
+    destination_url: str = "https://example.com"
+    custom_image_url: str | None = None
+
+
+@app.post("/api/company/add-product")
+def create_product(data: ProductCreate):
+    # Use custom image if provided; otherwise generate locally using SD-Turbo on RTX 4050
+    if data.custom_image_url and data.custom_image_url.strip():
+        img_url = data.custom_image_url.strip()
+    else:
+        img_url = generate_local_sd_banner(
+            data.product_name,
+            data.category,
+            data.description
+        )
+
+    product_id = add_product_campaign(
+        company_name=data.company_name,
+        product_name=data.product_name,
+        category=data.category,
+        description=data.description,
+        target_topics=data.target_topics,
+        price=data.price,
+        image_url=img_url,
+        destination_url=data.destination_url
+    )
+
+    return {
+        "status": "success",
+        "product_id": product_id,
+        "image_url": img_url
+    }
+
+
+@app.get("/recommend")
+def get_recommendations(content: str = Query(..., min_length=1, max_length=10000)):
+    return {"recommendations": recommend_ads(content)}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000)
+
+
+/* ====================================================================== */
+/* FILE: backend/recommendations.py */
+/* ====================================================================== */
+
+import time
+from sentence_transformers import SentenceTransformer, util
+from database import get_active_ads
+
+# Initialize semantic embedding model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+cached_ads = []
+cached_embeddings = None
+last_cache_refresh = 0
+CACHE_TTL_SECONDS = 30
+
+
+def refresh_ad_cache():
+    global cached_ads, cached_embeddings, last_cache_refresh
+
+    cached_ads = get_active_ads()
+
+    if not cached_ads:
+        cached_embeddings = None
+        last_cache_refresh = time.time()
+        return
+
+    ad_texts = []
+    for ad in cached_ads:
+        topics = ad.get("target_topics", "")
+        if isinstance(topics, list):
+            topics = ", ".join(topics)
+
+        name = ad.get("product_name") or ad.get("name", "")
+        company = ad.get("company_name", "")
+        category = ad.get("category", "")
+        desc = ad.get("description", "")
+
+        ad_texts.append(
+            f"Product: {name} by {company}. Category: {category}. "
+            f"Description: {desc}. Target topics and interests: {topics}."
+        )
+
+    cached_embeddings = model.encode(
+        ad_texts,
+        convert_to_tensor=True,
+        normalize_embeddings=True
+    )
+    last_cache_refresh = time.time()
+
+
+def recommend_ads(page_content: str, limit: int = 2):
+    global cached_ads, cached_embeddings, last_cache_refresh
+
+    page_content = " ".join(page_content.split())
+    if not page_content:
+        return []
+
+    # Refresh periodically so database changes are picked up
+    if (
+        cached_embeddings is None
+        or time.time() - last_cache_refresh >= CACHE_TTL_SECONDS
+    ):
+        refresh_ad_cache()
+
+    if not cached_ads or cached_embeddings is None:
+        return []
+
+    # Encode active page text (first 4000 characters)
+    page_embedding = model.encode(
+        page_content[:4000],
+        convert_to_tensor=True,
+        normalize_embeddings=True
+    )
+
+    scores = util.cos_sim(page_embedding, cached_embeddings)[0]
+
+    ranked_ads = []
+    for index, ad in enumerate(cached_ads):
+        score = float(scores[index].item())
+        ranked_ads.append({
+            "id": ad["id"],
+            "name": ad.get("product_name") or ad.get("name", "Sponsored Recommendation"),
+            "description": ad.get("description", ""),
+            "price": ad.get("price", ""),
+            "image_url": ad.get("image_url"),
+            "destination_url": ad.get("destination_url"),
+            "similarity": round(score, 4),
+        })
+
+    ranked_ads.sort(key=lambda ad: ad["similarity"], reverse=True)
+
+    # Reliable threshold for web pages
+    MIN_SIMILARITY = 0.15
+    matches = [ad for ad in ranked_ads if ad["similarity"] >= MIN_SIMILARITY]
+
+    # Graceful demo fallback: If browsing a mixed/generic page (e.g. YouTube homepage),
+    # return the highest-scoring ad instead of leaving the UI blank
+    if not matches and ranked_ads:
+        return [ranked_ads[0]]
+
+    return matches[:max(1, min(limit, 2))]
+
+
+/* ====================================================================== */
+/* FILE: backend/requirements.txt */
+/* ====================================================================== */
+
+fastapi
+uvicorn
+requests
+pydantic
+sentence-transformers
+torch
+torchvision
+diffusers
+transformers
+accelerate
+
+
+/* ====================================================================== */
+/* FILE: backend/sd_generator.py */
+/* ====================================================================== */
+
+import torch
+from diffusers import AutoPipelineForText2Image
+from pathlib import Path
+import uuid
+
+# Setup static directory to save generated ads
+STATIC_DIR = Path(__file__).parent / "static" / "ads"
+STATIC_DIR.mkdir(parents=True, exist_ok=True)
+
+# Select GPU device
+device = "cuda" if torch.cuda.is_available() else "cpu"
+torch_dtype = torch.float16 if device == "cuda" else torch.float32
+
+print(f"[Stable Diffusion] Loading SD-Turbo on {device} (VRAM-optimized for 6GB)...")
+
+# Fast 1-step distilled Stable Diffusion model
+pipe = AutoPipelineForText2Image.from_pretrained(
+    "stabilityai/sd-turbo",
+    torch_dtype=torch_dtype,
+    variant="fp16" if device == "cuda" else None
+)
+pipe.to(device)
+
+# Enable memory optimizations
+if device == "cuda":
+    pipe.enable_attention_slicing()
+
+print("[Stable Diffusion] Model ready for generation.")
+
+
+def generate_local_sd_banner(product_name: str, category: str, description: str) -> str:
+    """
+    Generates a commercial ad graphic locally on RTX 4050,
+    saves it to disk, and returns the accessible static URL.
+    """
+    prompt = (
+        f"commercial ad banner for {product_name}, {category}, {description}, "
+        f"isolated studio lighting, award-winning commercial product photography, 8k, sharp focus"
+    )
+
+    # 1-step inference on SD-Turbo runs in ~0.4s on RTX 4050
+    image = pipe(
+        prompt=prompt,
+        num_inference_steps=1,
+        guidance_scale=0.0,
+        width=512,
+        height=320
+    ).images[0]
+
+    filename = f"ad_{uuid.uuid4().hex[:8]}.png"
+    filepath = STATIC_DIR / filename
+    image.save(filepath)
+
+    # Returns the URL hosted by FastAPI
+    return f"http://127.0.0.1:8000/static/ads/{filename}"
+
+
+/* ====================================================================== */
+/* FILE: backend/seed_ads.py */
+/* ====================================================================== */
+
+from database import create_tables, get_active_ads, add_product_campaign
+
+create_tables()
+
+sample_ads = [
+    (
+        "BloomBox Luxury Florals",
+        "Artisanal Fresh Rose Bouquet",
+        "Florist & Gifts",
+        "Handcrafted fresh rose bouquets and floral arrangements delivered fresh daily.",
+        "flowers, roses, bouquet, gardening, plants, florist, gifts, wedding",
+        "$45.00",
+        "https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=600&q=80",
+        "https://example.com/flowers"
+    ),
+    (
+        "Purrfect Play Supplies",
+        "Interactive Smart Feather Cat Toy",
+        "Pet Supplies",
+        "Rechargeable automatic motion cat toy designed to keep your feline active.",
+        "cats, kittens, cat toys, pet supplies, felines, animals",
+        "$19.99",
+        "https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=600&q=80",
+        "https://example.com/cat-products"
+    ),
+    (
+        "ChocoArtisanal Treats",
+        "Belgian Dark Chocolate Truffles Box",
+        "Gourmet & Sweets",
+        "Single-origin dark cocoa truffles handmade with organic ingredients.",
+        "chocolate, cocoa, desserts, sweets, gifts, bakery, candy",
+        "$24.50",
+        "https://images.unsplash.com/photo-1549007994-cb92caebd54b?auto=format&fit=crop&w=600&q=80",
+        "https://example.com/chocolate"
+    ),
+    (
+        "DriveSmart Innovations",
+        "Magnetic Wireless Car Dashboard Charger",
+        "Automotive & Tech",
+        "Fast-charging magnetic car mount compatible with all modern smartphones.",
+        "cars, automobiles, driving, car accessories, vehicles, road trips",
+        "$34.00",
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+        "https://example.com/car-accessories"
+    ),
+]
+
+existing_names = {ad.get("product_name") or ad.get("name") for ad in get_active_ads()}
+
+for ad in sample_ads:
+    if ad[1] not in existing_names:
+        add_product_campaign(*ad)
+
+print("Sample ad campaigns initialized without placeholders!")
+
+
+/* ====================================================================== */
+/* FILE: extension/background.js */
+/* ====================================================================== */
+
+/* AdSense AI background service worker.
+   Ads are displayed only inside popup.html. */
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("AdSense AI extension installed.");
+});
+
+// Record navigation for debugging only.
+// Do not read webpage content or inject ads here.
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab?.url) {
+    console.log("AdSense AI: Page loaded:", tab.url);
+  }
+});
+
+
+/* ====================================================================== */
+/* FILE: extension/content.js */
+/* ====================================================================== */
+
+// content.js
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "inject_ads") {
+    renderAds(request.ads);
+  }
+});
+
+function renderAds(ads) {
+  // Prevent duplicate ad injection
+  if (document.getElementById("adsense-ai-banner")) return;
+
+  const adContainer = document.createElement("div");
+  adContainer.id = "adsense-ai-banner";
+  adContainer.innerHTML = `
+    <div style="
+      position: fixed; bottom: 20px; right: 20px; z-index: 999999;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: #fff; padding: 16px; border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4); font-family: system-ui, sans-serif;
+      border: 1px solid rgba(255,255,255,0.1); max-width: 320px;
+    ">
+      <span style="font-size: 10px; background: #3b82f6; padding: 2px 6px; border-radius: 4px; text-transform: uppercase;">AdSenseAI Match</span>
+      <h4 style="margin: 8px 0 4px 0; font-size: 15px; color: #f8fafc;">${ads?.title || "Sponsored Recommendation"}</h4>
+      <p style="margin: 0 0 12px 0; font-size: 12px; color: #94a3b8;">${ads?.description || "Tailored perfectly to your current search intent."}</p>
+      <a href="${ads?.url || '#'}" target="_blank" style="
+        display: inline-block; background: #2563eb; color: white; padding: 6px 12px;
+        border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;
+      ">Learn More</a>
+      <button id="close-ai-ad" style="
+        background: transparent; border: none; color: #94a3b8; float: right; cursor: pointer; font-size: 14px;
+      ">✕</button>
+    </div>
+  `;
+
+  document.body.appendChild(adContainer);
+
+  document.getElementById("close-ai-ad").onclick = () => {
+    adContainer.remove();
+  };
+}
+
+
+/* ====================================================================== */
+/* FILE: extension/manifest.json */
+/* ====================================================================== */
+
+{
+  "manifest_version": 3,
+  "name": "AdSenseAI",
+  "version": "1.0",
+  "description": "Contextual AI ads based on web search and page content.",
+  
+  
+  
+"permissions": [
+  "tabs",
+  "activeTab",
+  "scripting",
+  "storage"
+],
+
+  
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
+
+
+/* ====================================================================== */
+/* FILE: extension/popup.css */
+/* ====================================================================== */
+
+
+
+
+/* ====================================================================== */
+/* FILE: extension/popup.html */
+/* ====================================================================== */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdSense AI</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --purple: #7654e8;
+      --purple-dark: #5635bf;
+      --ink: #24213a;
+      --muted: #77758b;
+      --surface: #ffffff;
+      --border: #eae6f5;
+    }
+
+    body {
+      width: 360px;
+      min-height: 320px;
+      margin: 0;
+      padding: 18px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(160deg, #f6f1ff 0%, #fbfaff 48%, #f0f5ff 100%);
+    }
+
+    header { margin-bottom: 17px; }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #9575ff, #5936c5);
+      color: white;
+      font-size: 23px;
+      box-shadow: 0 5px 14px #7654e833;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 21px;
+      font-weight: 750;
+      letter-spacing: -0.6px;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 13px;
+      padding: 6px 9px;
+      border: 1px solid #e3dcff;
+      border-radius: 20px;
+      background: #f0ebff;
+      color: #6344bd;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #8b6bf0;
+    }
+
+    .notice {
+      padding: 12px;
+      border: 1px solid #e9e0ff;
+      border-radius: 13px;
+      background: #ffffffc9;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #5e5875;
+    }
+
+    .notice strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #42336d;
+      font-size: 12px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border: 0;
+      border-radius: 11px;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(0); }
+
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid #b6a3ff;
+      outline-offset: 2px;
+    }
+
+    #consentButton {
+      background: linear-gradient(135deg, #8867f3, #633ed0);
+      color: white;
+      box-shadow: 0 5px 12px #7654e82b;
+    }
+
+    #analyseButton {
+      background: var(--ink);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .secondary {
+      border: 1px solid var(--border);
+      background: white;
+      color: #6546bd;
+    }
+
+    #status {
+      min-height: 18px;
+      margin: 13px 2px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0 10px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .section-heading span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    #ads {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ad-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: var(--surface);
+      box-shadow: 0 5px 18px #30205d0a;
+      transition: box-shadow 0.2s;
+    }
+
+    .ad-card:hover {
+      box-shadow: 0 8px 22px #30205d14;
+    }
+
+    .ad-card img {
+      display: block;
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      background: #eee9fa;
+    }
+
+    .ad-content { padding: 13px; }
+
+    .sponsored {
+      color: #7855d3;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+    }
+
+    .ad-content h2 {
+      margin: 7px 0 5px;
+      color: var(--ink);
+      font-size: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .ad-content p {
+      margin: 0;
+      color: #706d80;
+      font-size: 11px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .ad-content a {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 11px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      background: #eee8ff;
+      color: #603dc5;
+      font-size: 11px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    .ad-content a:hover { background: #e2d8ff; }
+
+    footer {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid #e8e3f1;
+      color: #89859b;
+      font-size: 10px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .privacy-icon { margin-right: 4px; }
+    
+.ad-image-placeholder {
+  width: 100%;
+  height: 160px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f3e8ff, #e0e7ff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #5b21b6;
+  text-align: center;
+}
+
+.placeholder-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: #ffffffb8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.placeholder-brand {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.placeholder-message {
+  font-size: 11px;
+  color: #6d5b91;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-row">
+      <div class="logo" aria-hidden="true">✦</div>
+      <div>
+        <h1>AdSense AI</h1>
+        <p class="subtitle">Discover ads that match your interests.</p>
+      </div>
+    </div>
+    <div class="pill"><span class="dot"></span> AI-POWERED RECOMMENDATIONS</div>
+  </header>
+
+  <section class="notice">
+    <strong>🔒 Your browsing, your choice</strong>
+    Allow this session to analyse the active webpage and find relevant ads.
+    Page text is sent to your local AdSense AI backend for matching.
+  </section>
+
+  <button id="consentButton">✓ &nbsp; Allow for this session</button>
+  <button id="analyseButton" disabled>✦ &nbsp; Find relevant ads</button>
+  <button id="stopButton" class="secondary" hidden>Turn off consent</button>
+
+  <p id="status" role="status" aria-live="polite">
+    Consent is required before analysis.
+  </p>
+
+  <div class="section-heading">
+    Recommended for you
+    <span>Up to 2 ads per session</span>
+  </div>
+
+  <section id="ads" aria-label="Recommended advertisements"></section>
+
+  <footer>
+    <span class="privacy-icon">🛡️</span>
+    Privacy-conscious demo · Ads appear only in this popup
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
+
+/* ====================================================================== */
+/* FILE: extension/popup.js */
+/* ====================================================================== */
+
+const API_BASE = "http://127.0.0.1:8000";
+
+const consentButton = document.getElementById("consentButton");
+const analyseButton = document.getElementById("analyseButton");
+const stopButton = document.getElementById("stopButton");
+const statusBox = document.getElementById("status");
+const adsBox = document.getElementById("ads");
+
+function setStatus(message) {
+  statusBox.textContent = message;
+}
+
+// Fallback graphic for missing images
+function createAdPlaceholder(adName = "AdSense AI") {
+  const placeholder = document.createElement("div");
+  placeholder.className = "ad-image-placeholder";
+
+  const icon = document.createElement("div");
+  icon.className = "placeholder-icon";
+  icon.textContent = "✦";
+
+  const brand = document.createElement("div");
+  brand.className = "placeholder-brand";
+  brand.textContent = adName;
+
+  placeholder.append(icon, brand);
+  return placeholder;
+}
+
+function showAds(ads) {
+  adsBox.replaceChildren();
+
+  if (!ads.length) {
+    setStatus("No matching ads found for this page.");
+    return;
+  }
+
+  for (const ad of ads) {
+    const card = document.createElement("article");
+    card.className = "ad-card";
+
+    // Ad banner image
+    const imageArea = document.createElement("div");
+    if (ad.image_url) {
+      const image = document.createElement("img");
+      image.alt = ad.name || "Advertisement";
+      image.referrerPolicy = "no-referrer";
+      image.loading = "eager";
+      image.src = ad.image_url;
+      image.onerror = () => {
+        imageArea.replaceChildren(createAdPlaceholder(ad.name));
+      };
+      imageArea.appendChild(image);
+    } else {
+      imageArea.appendChild(createAdPlaceholder(ad.name));
+    }
+    card.appendChild(imageArea);
+
+    // Ad text content
+    const content = document.createElement("div");
+    content.className = "ad-content";
+
+    const matchPercent = Math.round((ad.similarity || 0.75) * 100);
+    const label = document.createElement("div");
+    label.className = "sponsored";
+    label.textContent = `✦ Semantic Match (${matchPercent}%)`;
+
+    const title = document.createElement("h2");
+    title.textContent = ad.name || "Sponsored Recommendation";
+
+    const description = document.createElement("p");
+    description.textContent = ad.description || "";
+
+    content.append(label, title, description);
+
+    // Destination link
+    if (ad.destination_url) {
+      const link = document.createElement("a");
+      link.href = ad.destination_url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Learn more ↗";
+      content.appendChild(link);
+    }
+
+    card.appendChild(content);
+    adsBox.appendChild(card);
+  }
+
+  setStatus(`${ads.length} relevant ad${ads.length === 1 ? "" : "s"} matched.`);
+}
+
+async function readSession() {
+  return chrome.storage.session.get(["consent"]);
+}
+
+async function refreshControls() {
+  const data = await readSession();
+  const allowed = data.consent === true;
+
+  consentButton.hidden = allowed;
+  analyseButton.disabled = !allowed;
+  stopButton.hidden = !allowed;
+}
+
+// Enable consent
+consentButton.addEventListener("click", async () => {
+  await chrome.storage.session.set({ consent: true });
+  adsBox.replaceChildren();
+  await refreshControls();
+  setStatus("Consent active. Click 'Find relevant ads' to match page content.");
+});
+
+// Disable consent
+stopButton.addEventListener("click", async () => {
+  await chrome.storage.session.set({ consent: false });
+  adsBox.replaceChildren();
+  await refreshControls();
+  setStatus("Consent turned off. No ads will be displayed.");
+});
+
+// Read page and fetch recommendation
+analyseButton.addEventListener("click", async () => {
+  analyseButton.disabled = true;
+  adsBox.replaceChildren();
+  setStatus("Extracting webpage text...");
+
+  try {
+    const session = await readSession();
+    if (session.consent !== true) {
+      setStatus("Please grant session permission first.");
+      return;
+    }
+
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    });
+
+    if (!tab || !tab.id || !/^https?:/.test(tab.url || "")) {
+      setStatus("Open a standard website first (browser internal tabs cannot be analyzed).");
+      return;
+    }
+
+    const results = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => ({
+        title: document.title || "",
+        text: (document.body?.innerText || "").slice(0, 8000)
+      })
+    });
+
+    const page = results?.[0]?.result;
+    if (!page || !page.text.trim()) {
+      setStatus("No readable text found on this page.");
+      return;
+    }
+
+    const pageContent = `${page.title}\n${page.text}`.slice(0, 6000);
+    setStatus("Matching with AI vector database...");
+
+    const endpoint = new URL(`${API_BASE}/recommend`);
+    endpoint.searchParams.set("content", pageContent);
+
+    const response = await fetch(endpoint.toString());
+    if (!response.ok) {
+      throw new Error(`Server returned HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const recommendations = Array.isArray(data) ? data : data.recommendations;
+
+    if (!Array.isArray(recommendations) || recommendations.length === 0) {
+      setStatus("No matching ads found in inventory.");
+      return;
+    }
+
+    showAds(recommendations);
+  } catch (error) {
+    console.error("AdSense AI error:", error);
+    if (error.message?.includes("Failed to fetch")) {
+      setStatus("Cannot reach FastAPI backend. Verify 'python main.py' is running on port 8000.");
+    } else {
+      setStatus(`Error: ${error.message || "Failed to analyze page."}`);
+    }
+  } finally {
+    analyseButton.disabled = false;
+  }
+});
+
+// Initialize extension popup
+refreshControls().then(() => {
+  readSession().then(data => {
+    if (data.consent === true) {
+      setStatus("Ready. Click 'Find relevant ads' to match page content.");
+    } else {
+      setStatus("Consent is required before analysis.");
+    }
+  });
+});
+
+
+/* ====================================================================== */
+/* FILE: website/index.html */
+/* ====================================================================== */
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdSense AI Search</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #20243a;
+        }
+
+        header {
+            padding: 22px 8%;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        header span {
+            color: #6658e8;
+        }
+
+        main {
+            max-width: 850px;
+            margin: 65px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .intro h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .intro p {
+            color: #687086;
+            line-height: 1.6;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            padding: 9px;
+            background: white;
+            border: 1px solid #e0e3ed;
+            border-radius: 14px;
+            box-shadow: 0 8px 28px #242b4a0c;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 13px 22px;
+            background: #6658e8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .suggestions {
+            text-align: center;
+            margin: 20px 0 35px;
+            color: #687086;
+            font-size: 14px;
+        }
+
+        .suggestions button {
+            margin: 5px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: white;
+            color: #5146bd;
+            border: 1px solid #dedafc;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 24px;
+            margin-top: 18px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+        }
+
+        #summary {
+            line-height: 1.8;
+            color: #4b5568;
+        }
+
+        a {
+            color: #6658e8;
+        }
+
+        .muted {
+            color: #687086;
+            font-size: 14px;
+        }
+
+        .history-item {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            cursor: pointer;
+            background: white;
+        }
+
+        #status {
+            text-align: center;
+            color: #6658e8;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            color: #7b8192;
+            font-size: 13px;
+            padding: 35px 15px;
+        }
+
+        @media (max-width: 520px) {
+            .intro h1 {
+                font-size: 30px;
+            }
+
+            form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>AdSense <span>AI</span> Search</header>
+
+    <main>
+        <section class="intro">
+            <h1>Curiosity starts here.</h1>
+            <p>Search a topic, discover useful information, and explore something new.</p>
+        </section>
+
+        <form id="searchForm">
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Try cats, chocolate, cars..."
+                maxlength="200"
+                required
+            >
+            <button id="searchButton" type="submit">Search</button>
+        </form>
+
+        <div class="suggestions">
+            Try:
+            <button type="button" data-query="Cats">🐱 Cats</button>
+            <button type="button" data-query="Chocolate">🍫 Chocolate</button>
+            <button type="button" data-query="Cars">🚗 Cars</button>
+            <button type="button" data-query="Flowers">🌸 Flowers</button>
+        </div>
+
+        <p id="status" role="status"></p>
+
+        <section class="panel" id="resultPanel" hidden>
+            <h2 id="resultTitle">Search results</h2>
+            <p id="summary"></p>
+            <a id="articleLink" target="_blank" rel="noopener noreferrer" hidden>
+                Read more
+            </a>
+        </section>
+
+        <section class="panel">
+            <h2>Recent searches</h2>
+            <p class="muted">Your searches are saved locally by the backend.</p>
+            <div id="historyList">Loading history...</div>
+        </section>
+    </main>
+
+    <footer>
+        AdSense AI · Search thoughtfully. Discover more.
+    </footer>
+
+    <script>
+        const API = "http://127.0.0.1:8000";
+
+        const form = document.getElementById("searchForm");
+        const input = document.getElementById("searchInput");
+        const button = document.getElementById("searchButton");
+        const status = document.getElementById("status");
+        const resultPanel = document.getElementById("resultPanel");
+
+        async function searchTopic(topic) {
+            topic = topic.trim();
+
+            if (!topic) return;
+
+            input.value = topic;
+            button.disabled = true;
+            status.textContent = "Searching...";
+            resultPanel.hidden = true;
+
+            try {
+                const response = await fetch(
+                    `${API}/search?topic=${encodeURIComponent(topic)}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("The search request failed.");
+                }
+
+                const data = await response.json();
+
+                document.getElementById("resultTitle").textContent =
+                    data.title || topic;
+
+                document.getElementById("summary").textContent =
+                    data.summary || "No summary is available.";
+
+                const articleLink = document.getElementById("articleLink");
+
+                if (data.article_url) {
+                    articleLink.href = data.article_url;
+                    articleLink.hidden = false;
+                } else {
+                    articleLink.hidden = true;
+                    articleLink.removeAttribute("href");
+                }
+
+                resultPanel.hidden = false;
+                status.textContent = "";
+                await loadHistory();
+
+            } catch (error) {
+                status.textContent =
+                    "Couldn't complete the search. Check that the backend is running.";
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function loadHistory() {
+            const historyList = document.getElementById("historyList");
+
+            try {
+                const response = await fetch(`${API}/history`);
+
+                if (!response.ok) {
+                    throw new Error("History request failed.");
+                }
+
+                const data = await response.json();
+                historyList.replaceChildren();
+
+                if (!data.history || data.history.length === 0) {
+                    historyList.textContent = "No searches yet.";
+                    return;
+                }
+
+                data.history.forEach(item => {
+                    const chip = document.createElement("button");
+                    chip.type = "button";
+                    chip.className = "history-item";
+                    chip.textContent = item.query;
+
+                    chip.addEventListener("click", () => {
+                        searchTopic(item.query);
+                    });
+
+                    historyList.appendChild(chip);
+                });
+
+            } catch {
+                historyList.textContent =
+                    "History is unavailable. Check the backend.";
+            }
+        }
+
+        form.addEventListener("submit", event => {
+            event.preventDefault();
+            searchTopic(input.value);
+        });
+
+        document.querySelectorAll("[data-query]").forEach(button => {
+            button.addEventListener("click", () => {
+                searchTopic(button.dataset.query);
+            });
+        });
+
+        loadHistory();
+    </script>
+</body>
+</html>
+
